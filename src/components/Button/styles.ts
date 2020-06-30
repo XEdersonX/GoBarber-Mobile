@@ -4,7 +4,8 @@ import { RectButton } from 'react-native-gesture-handler';
 // export const Container = styled.View
 // bota parentesesempre que vai se estilizar componente que vem de fora d react native
 export const Container = styled(RectButton)`
-  width: 100%;
+  /* width: 350px; */
+  /* width: 100%; */
   height: 60px;
   background: #ff9000;
   border-radius: 10px;
