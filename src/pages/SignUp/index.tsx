@@ -14,6 +14,8 @@ import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 
+import api from '../../services/api';
+
 import getValidationErrors from '../../utils/getValidationErrors';
 
 import Input from '../../components/Input';
@@ -53,9 +55,15 @@ const SignUp: React.FC = () => {
         abortEarly: false, // esta propriedade vai retornar todos os erros que ele encontrar e nao so o primeiro erro.
       });
 
-      // await api.post('/users', data);
+      await api.post('/users', data);
 
-      // history.push('/'); // Redirecionar para pagina de login
+      Alert.alert(
+        'Cadastro realizado com sucesso!',
+        'Você já pode fazer login na aplicação.',
+      );
+
+      // navigation.navigate('SignIn'); // Redirecionar para pagina de login
+      navigation.goBack(); // Redirecionar para pagina de login
     } catch (err) {
       console.log(err);
       if (err instanceof Yup.ValidationError) {
@@ -64,7 +72,7 @@ const SignUp: React.FC = () => {
         // Este ponto de interrogacao serve para ver se esta variavel exite pra depois chamar o setErrros.
         formRef.current?.setErrors(errors);
 
-        // Esta parte fiz por minha conta
+        // Esta parte fiz por minha conta. Para criar uma validação
         let mensagemErro = '';
 
         if (errors.name !== undefined) {
