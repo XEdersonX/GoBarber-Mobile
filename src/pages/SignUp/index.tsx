@@ -38,67 +38,70 @@ const SignUp: React.FC = () => {
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
-  const handleSignUp = useCallback(async (data: SignUpFormData) => {
-    // console.log(data);
-    try {
-      formRef.current?.setErrors({});
+  const handleSignUp = useCallback(
+    async (data: SignUpFormData) => {
+      // console.log(data);
+      try {
+        formRef.current?.setErrors({});
 
-      const schema = Yup.object().shape({
-        name: Yup.string().required('Nome obrigatório'),
-        email: Yup.string()
-          .required('E-mail obrigatório')
-          .email('Digite um e-mail válido'),
-        password: Yup.string().min(6, 'No mínimo 6 dígitos'),
-      });
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Nome obrigatório'),
+          email: Yup.string()
+            .required('E-mail obrigatório')
+            .email('Digite um e-mail válido'),
+          password: Yup.string().min(6, 'No mínimo 6 dígitos'),
+        });
 
-      await schema.validate(data, {
-        abortEarly: false, // esta propriedade vai retornar todos os erros que ele encontrar e nao so o primeiro erro.
-      });
+        await schema.validate(data, {
+          abortEarly: false, // esta propriedade vai retornar todos os erros que ele encontrar e nao so o primeiro erro.
+        });
 
-      await api.post('/users', data);
+        await api.post('/users', data);
 
-      Alert.alert(
-        'Cadastro realizado com sucesso!',
-        'Você já pode fazer login na aplicação.',
-      );
+        Alert.alert(
+          'Cadastro realizado com sucesso!',
+          'Você já pode fazer login na aplicação.',
+        );
 
-      // navigation.navigate('SignIn'); // Redirecionar para pagina de login
-      navigation.goBack(); // Redirecionar para pagina de login
-    } catch (err) {
-      console.log(err);
-      if (err instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(err);
+        // navigation.navigate('SignIn'); // Redirecionar para pagina de login
+        navigation.goBack(); // Redirecionar para pagina de login
+      } catch (err) {
+        console.log(err);
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
 
-        // Este ponto de interrogacao serve para ver se esta variavel exite pra depois chamar o setErrros.
-        formRef.current?.setErrors(errors);
+          // Este ponto de interrogacao serve para ver se esta variavel exite pra depois chamar o setErrros.
+          formRef.current?.setErrors(errors);
 
-        // Esta parte fiz por minha conta. Para criar uma validação
-        let mensagemErro = '';
+          // Esta parte fiz por minha conta. Para criar uma validação
+          let mensagemErro = '';
 
-        if (errors.name !== undefined) {
-          mensagemErro += `\nNome: ${errors.name}`;
+          if (errors.name !== undefined) {
+            mensagemErro += `\nNome: ${errors.name}`;
+          }
+
+          if (errors.email !== undefined) {
+            mensagemErro += `\nEmail: ${errors.email}`;
+          }
+
+          if (errors.password !== undefined) {
+            mensagemErro += `\nSenha: ${errors.password}`;
+          }
+
+          Alert.alert('Atenção', mensagemErro);
+
+          return;
         }
 
-        if (errors.email !== undefined) {
-          mensagemErro += `\nEmail: ${errors.email}`;
-        }
-
-        if (errors.password !== undefined) {
-          mensagemErro += `\nSenha: ${errors.password}`;
-        }
-
-        Alert.alert('Atenção', mensagemErro);
-
-        return;
+        // disparar um toast
+        Alert.alert(
+          'Erro no cadastro',
+          'Ocorreu um erro ao fazer cadastro, tente novamente.',
+        );
       }
-
-      // disparar um toast
-      Alert.alert(
-        'Erro no cadastro',
-        'Ocorreu um erro ao fazer cadastro, tente novamente.',
-      );
-    }
-  }, []);
+    },
+    [navigation],
+  );
 
   return (
     // Fragment
